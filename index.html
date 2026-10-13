@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA ANIME - ئۆرا ئانیمە</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#120c24">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0d0714',
+                            card: '#160d27',
+                            accent: '#9333ea',
+                            pink: '#ec4899',
+                            glow: '#a855f7'
+                        }
+                    },
+                    fontFamily: {
+                        speda: ['Speda', 'Tahoma', 'Segoe UI', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @font-face {
+            font-family: 'Speda';
+            src: url('fonts/Speda-Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        }
+        body {
+            font-family: 'Speda', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d0714;
+            color: #f3f4f6;
+            background-image: radial-gradient(circle at 50% 0%, rgba(147, 51, 234, 0.2), transparent 75%);
+            min-height: 100vh;
+        }
+        .aura-glow {
+            box-shadow: 0 0 25px rgba(147, 51, 234, 0.4);
+        }
+        .glass-card {
+            background: rgba(22, 13, 39, 0.85);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(147, 51, 234, 0.25);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 glass-card border-b border-purple-900/50 px-4 py-3 shadow-xl">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl p-0.5 aura-glow overflow-hidden bg-gradient-to-tr from-purple-600 to-pink-500">
+                    <img src="icons/icon-192.png" alt="AURA ANIME Logo" class="w-full h-full object-cover rounded-[10px]">
+                </div>
+                <div>
+                    <h1 class="text-xl font-black bg-gradient-to-r from-purple-400 via-pink-400 to-purple-300 bg-clip-text text-transparent tracking-wide">
+                        AURA ANIME
+                    </h1>
+                    <p class="text-[10px] text-gray-400 font-semibold">Developer: @Safenyorochi</p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-2">
+                <button id="installPwaBtn" class="hidden bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-all shadow-lg flex items-center gap-1.5 border border-pink-400/30">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>دابەزاندنی ئەپ</span>
+                </button>
+                <button id="adminLoginBtn" onclick="toggleAdminModal()" class="bg-purple-950/80 border border-purple-600/50 hover:bg-purple-900 text-purple-200 text-xs px-3.5 py-2 rounded-xl transition font-medium">
+                    چوونەژووری ئەدمین
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
+        
+        <!-- Search & Filter Bar -->
+        <section class="glass-card p-4 rounded-2xl flex flex-col md:flex-row gap-4 justify-between items-center shadow-lg">
+            <div class="relative w-full md:w-96">
+                <input type="text" id="searchInput" placeholder="گەڕان بۆ ئانیمە..." class="w-full bg-purple-950/40 border border-purple-800/50 rounded-xl px-4 py-2.5 pr-10 text-sm text-gray-200 focus:outline-none focus:border-pink-500 transition shadow-inner">
+                <svg class="w-5 h-5 absolute right-3 top-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+
+            <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0" id="genreFilters">
+                <button onclick="filterGenre('all')" class="genre-btn active px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-purple-600 text-white shadow-md">هەمووی</button>
+                <button onclick="filterGenre('ئەکشن')" class="genre-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-purple-900/40 hover:bg-purple-800/60 text-purple-200">ئەکشن</button>
+                <button onclick="filterGenre('سەرکێشی')" class="genre-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-purple-900/40 hover:bg-purple-800/60 text-purple-200">سەرکێشی</button>
+                <button onclick="filterGenre('دراما')" class="genre-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-purple-900/40 hover:bg-purple-800/60 text-purple-200">دراما</button>
+                <button onclick="filterGenre('فانتازیا')" class="genre-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-purple-900/40 hover:bg-purple-800/60 text-purple-200">فانتازیا</button>
+            </div>
+        </section>
+
+        <!-- Admin Control Panel -->
+        <section id="adminPanel" class="hidden glass-card p-6 rounded-2xl border-pink-500/40 space-y-4 shadow-xl">
+            <div class="flex justify-between items-center border-b border-purple-800/40 pb-3">
+                <h2 class="text-lg font-bold text-pink-400 flex items-center gap-2">
+                    <span>⚙️</span> پانێڵی بەڕێوەبەرایەتی AURA ANIME
+                </h2>
+                <button onclick="logoutAdmin()" class="text-xs bg-red-900/50 hover:bg-red-800 text-red-200 px-3 py-1.5 rounded-lg border border-red-700/50">چوونەدەرەوە</button>
+            </div>
+
+            <form id="animeForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="hidden" id="animeId">
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">ناوی ئانیمە (کوردی/ئینگلیزی)</label>
+                    <input type="text" id="animeTitle" required class="w-full bg-purple-950/60 border border-purple-700/50 rounded-lg p-2 text-sm text-white focus:border-pink-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">ناوی ژاپۆنی (Japanese Title)</label>
+                    <input type="text" id="japaneseTitle" class="w-full bg-purple-950/60 border border-purple-700/50 rounded-lg p-2 text-sm text-white focus:border-pink-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">ژمارەی وەرزەکان</label>
+                    <input type="number" id="seasonCount" value="1" required class="w-full bg-purple-950/60 border border-purple-700/50 rounded-lg p-2 text-sm text-white focus:border-pink-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">ژمارەی ئەڵقەکان</label>
+                    <input type="number" id="episodeCount" value="12" required class="w-full bg-purple-950/60 border border-purple-700/50 rounded-lg p-2 text-sm text-white focus:border-pink-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">ساڵی بڵاوکردنەوە</label>
+                    <input type="number" id="releaseYear" value="2026" class="w-full bg-purple-950/60 border border-purple-700/50 rounded-lg p-2 text-sm text-white focus:border-pink-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">جۆر / ژانرەکان (کۆما دابنێ)</label>
+                    <input type="text" id="genres" placeholder="ئەکشن, فانتازیا" class="w-full bg-purple-950/60 border border-purple-700/50 rounded-lg p-2 text-sm text-white focus:border-pink-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">بەستەری تێلگرام (Telegram Post Link)</label>
+                    <input type="url" id="telegramUrl" placeholder="https://t.me/yourchannel/123" class="w-full bg-purple-950/60 border border-purple-700/50 rounded-lg p-2 text-sm text-white focus:border-pink-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">پۆستەری ئانیمە (Poster Image)</label>
+                    <input type="file" id="posterFile" accept="image/*" class="w-full bg-purple-950/60 border border-purple-700/50 rounded-lg p-1.5 text-xs text-gray-300">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-gray-300 mb-1">کورتە و کورتەی چیرۆک (Synopsis)</label>
+                    <textarea id="synopsis" rows="3" class="w-full bg-purple-950/60 border border-purple-700/50 rounded-lg p-2 text-sm text-white focus:border-pink-500 outline-none"></textarea>
+                </div>
+                <div class="md:col-span-2 flex gap-3">
+                    <button type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-2.5 rounded-xl transition shadow-md">
+                        تۆمارکردن / نوێکردنەوە
+                    </button>
+                    <button type="button" onclick="resetAnimeForm()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2.5 rounded-xl transition">
+                        هەڵوەشاندنەوە
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Anime List Grid -->
+        <section>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-100 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-pink-500 animate-pulse"></span>
+                    لیستی ئانیمەکان
+                </h2>
+                <span id="animeCount" class="text-xs text-purple-300 bg-purple-950 px-3 py-1 rounded-full border border-purple-800/50 font-medium">0 ئانیمە</span>
+            </div>
+
+            <div id="animeGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                <!-- Dynamic Content Here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-card border-t border-purple-900/40 mt-auto py-6 px-4 text-center text-xs text-gray-400 space-y-1">
+        <p class="font-semibold text-purple-300">AURA ANIME &copy; 2026 - سەرجەم مافەکان پارێزراون</p>
+        <p class="text-pink-400 font-bold">Developer: @Safenyorochi</p>
+    </footer>
+
+    <!-- Admin Login Modal -->
+    <div id="adminModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-card max-w-sm w-full p-6 rounded-2xl border-purple-500/50 aura-glow space-y-4">
+            <h3 class="text-lg font-bold text-center text-pink-400">چوونەژووری ئەدمین</h3>
+            <div>
+                <label class="block text-xs text-gray-300 mb-1">کۆدی بەڕێوەبەر [AURA-ADMIN-2026]</label>
+                <input type="password" id="adminPasswordInput" placeholder="AURA-ADMIN-2026" class="w-full bg-purple-950/80 border border-purple-700/60 rounded-xl p-2.5 text-white text-center focus:outline-none focus:border-pink-500">
+            </div>
+            <div id="loginError" class="text-xs text-red-400 text-center hidden">کۆدی بەڕێوەبەر هەڵەیە!</div>
+            <div class="flex gap-2">
+                <button onclick="attemptAdminLogin()" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-2 rounded-xl text-sm shadow-md">چوونەژوورەوە</button>
+                <button onclick="toggleAdminModal()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-xl text-sm">داخستن</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script>
+        let animeData = [];
+        let isAdmin = false;
+        let currentGenre = 'all';
+        const API_URL = '/api/anime';
+
+        async function fetchAnime() {
+            try {
+                const res = await fetch(API_URL);
+                if (res.ok) {
+                    animeData = await res.json();
+                    renderAnime();
+                    return;
+                }
+            } catch (e) {
+                console.log('Backend API offline, loading local storage.');
+            }
+
+            const local = localStorage.getItem('aura_anime_list');
+            if (local) {
+                animeData = JSON.parse(local);
+            } else {
+                animeData = []; // Start completely empty as requested
+                localStorage.setItem('aura_anime_list', JSON.stringify(animeData));
+            }
+            renderAnime();
+        }
+
+        function renderAnime() {
+            const grid = document.getElementById('animeGrid');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = animeData.filter(a => {
+                const matchesSearch = a.title.toLowerCase().includes(searchVal) || (a.japaneseTitle && a.japaneseTitle.toLowerCase().includes(searchVal));
+                const matchesGenre = currentGenre === 'all' || (a.genres && a.genres.includes(currentGenre));
+                return matchesSearch && matchesGenre;
+            });
+
+            document.getElementById('animeCount').innerText = `${filtered.length} ئانیمە`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center glass-card rounded-2xl border-purple-800/30">
+                        <p class="text-purple-300 text-sm font-semibold">هیچ ئانیمەیەک نییە!</p>
+                        <p class="text-gray-400 text-xs mt-1">وەک ئەدمین بچۆ ژوورەوە بۆ زیادکردنی یەکەم ئانیمە.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(a => `
+                <div class="glass-card rounded-xl overflow-hidden group hover:border-pink-500/50 transition duration-300 flex flex-col h-full shadow-lg">
+                    <div class="relative aspect-[3/4] overflow-hidden bg-purple-950/50">
+                        <img src="${a.posterUrl || 'https://via.placeholder.com/300x400?text=Aura+Anime'}" alt="${a.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute top-2 right-2 bg-purple-950/90 backdrop-blur border border-purple-700/60 text-pink-400 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                            ${a.releaseYear || '2026'}
+                        </div>
+                    </div>
+                    <div class="p-3 flex flex-col flex-grow justify-between space-y-2">
+                        <div>
+                            <h3 class="font-bold text-sm text-gray-100 line-clamp-1 group-hover:text-pink-400 transition">${a.title}</h3>
+                            <p class="text-[11px] text-gray-400 line-clamp-1">${a.japaneseTitle || ''}</p>
+                            <div class="flex items-center gap-2 mt-2 text-[10px] text-purple-300">
+                                <span>وەرز: ${a.seasonCount}</span>
+                                <span>•</span>
+                                <span>ئەڵقە: ${a.episodeCount}</span>
+                            </div>
+                        </div>
+                        <div class="pt-2 border-t border-purple-900/40 flex items-center justify-between gap-1">
+                            ${a.telegramUrl ? `<a href="${a.telegramUrl}" target="_blank" class="flex-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 text-center py-1 rounded-lg text-xs transition">تێلگرام</a>` : ''}
+                            ${isAdmin ? `
+                                <button onclick="editAnime('${a.id}')" class="bg-pink-900/60 hover:bg-pink-800 text-pink-200 px-2 py-1 rounded-lg text-xs">دەستکاری</button>
+                                <button onclick="deleteAnime('${a.id}')" class="bg-red-900/60 hover:bg-red-800 text-red-200 px-2 py-1 rounded-lg text-xs">سڕینەوە</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPwaBtn').classList.remove('hidden');
+        });
+
+        document.getElementById('installPwaBtn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('installPwaBtn').classList.add('hidden');
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js').catch(console.error);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', renderAnime);
+
+        function filterGenre(genre) {
+            currentGenre = genre;
+            document.querySelectorAll('.genre-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white');
+                btn.classList.add('bg-purple-900/40', 'text-purple-200');
+            });
+            event.target.classList.add('bg-purple-600', 'text-white');
+            renderAnime();
+        }
+
+        function toggleAdminModal() {
+            document.getElementById('adminModal').classList.toggle('hidden');
+        }
+
+        async function attemptAdminLogin() {
+            const pass = document.getElementById('adminPasswordInput').value.trim();
+            if (pass === 'AURA-ADMIN-2026' || pass === '[AURA-ADMIN-2026]') {
+                isAdmin = true;
+                document.getElementById('adminPanel').classList.remove('hidden');
+                toggleAdminModal();
+                renderAnime();
+                document.getElementById('loginError').classList.add('hidden');
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            document.getElementById('adminPanel').classList.add('hidden');
+            renderAnime();
+        }
+
+        document.getElementById('animeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('animeId').value || Date.now().toString();
+            const posterFile = document.getElementById('posterFile').files[0];
+            
+            let posterUrl = "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500";
+            if (posterFile) {
+                posterUrl = await new Promise(res => {
+                    const r = new FileReader();
+                    r.onload = e => res(e.target.result);
+                    r.readAsDataURL(posterFile);
+                });
+            }
+
+            const newAnime = {
+                id,
+                title: document.getElementById('animeTitle').value,
+                japaneseTitle: document.getElementById('japaneseTitle').value,
+                seasonCount: parseInt(document.getElementById('seasonCount').value),
+                episodeCount: parseInt(document.getElementById('episodeCount').value),
+                releaseYear: parseInt(document.getElementById('releaseYear').value),
+                genres: document.getElementById('genres').value.split(',').map(g => g.trim()),
+                synopsis: document.getElementById('synopsis').value,
+                telegramUrl: document.getElementById('telegramUrl').value,
+                posterUrl
+            };
+
+            const index = animeData.findIndex(a => a.id === id);
+            if (index >= 0) {
+                animeData[index] = newAnime;
+            } else {
+                animeData.unshift(newAnime);
+            }
+
+            localStorage.setItem('aura_anime_list', JSON.stringify(animeData));
+            resetAnimeForm();
+            renderAnime();
+        });
+
+        function editAnime(id) {
+            const a = animeData.find(item => item.id === id);
+            if (!a) return;
+            document.getElementById('animeId').value = a.id;
+            document.getElementById('animeTitle').value = a.title;
+            document.getElementById('japaneseTitle').value = a.japaneseTitle || '';
+            document.getElementById('seasonCount').value = a.seasonCount;
+            document.getElementById('episodeCount').value = a.episodeCount;
+            document.getElementById('releaseYear').value = a.releaseYear;
+            document.getElementById('genres').value = a.genres ? a.genres.join(', ') : '';
+            document.getElementById('synopsis').value = a.synopsis || '';
+            document.getElementById('telegramUrl').value = a.telegramUrl || '';
+            window.scrollTo({ top: 200, behavior: 'smooth' });
+        }
+
+        function resetAnimeForm() {
+            document.getElementById('animeForm').reset();
+            document.getElementById('animeId').value = '';
+        }
+
+        function deleteAnime(id) {
+            if (confirm('دڵنیایت لە سڕینەوەی ئەم ئانیمەیە؟')) {
+                animeData = animeData.filter(a => a.id !== id);
+                localStorage.setItem('aura_anime_list', JSON.stringify(animeData));
+                renderAnime();
+            }
+        }
+
+        fetchAnime();
+    </script>
+</body>
+</html>
